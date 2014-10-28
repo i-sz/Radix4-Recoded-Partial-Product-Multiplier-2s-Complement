@@ -56,22 +56,32 @@ architecture RADIX_4_RECODING of RECODING is
           neg : out std_logic
       );
     end component;
+    
+--first_decoding
+signal y_s1, y_s2, y_s3, y_s4 : std_logic_vector(2 downto 0);    
 
 begin
+  
+  y_s1 <= y(1) & y(0) & '0' ;
+  
 
-	FIRST_RECODING_GROUP: RECODING_CELL port map ( y => y(1) & y(0) & '0', one => one(0), two => two(0), neg => neg(0) );
+	FIRST_RECODING_GROUP: RECODING_CELL port map ( y => y_s1, one => one(0), two => two(0), neg => neg(0) );
     
     MIDDLE_RECODING_GROUPS: for i in 1 to h-2 generate
-    	MID_RECODING_GROUP: RECODING_CELL port map ( y => y(2*i+1) & y(2*i) & y(2*i-1), one => one(i), two => two(i), neg => neg(i) );
+      y_s2 <=  y(2*i+1) & y(2*i) & y(2*i-1);
+    	MID_RECODING_GROUP: RECODING_CELL port map ( y =>y_s2, one => one(i), two => two(i), neg => neg(i) );
     end generate;
     
     LAST_RECODING_GROUP_EVEN_LENGTH: if h*2 = m generate
-    	LRG_EVEN: RECODING_CELL port map ( y => y(m-1) & y(m-2) & y(m-3), one => one(h-1), two => two(h-1), neg => neg(h-1) );
+     y_s3 <= y(m-1) & y(m-2) & y(m-3); 
+    	LRG_EVEN: RECODING_CELL port map ( y => y_s3, one => one(h-1), two => two(h-1), neg => neg(h-1) );
     end generate;
     
     LAST_RECODING_GROUP_ODD_LENGTH: if h*2 /= m generate
-    	LRG_ODD: RECODING_CELL port map ( y => y(m-1) & y(m-1) & y(m-2), one => one(h-1), two => two(h-1), neg => neg(h-1) );
+     y_s4 <= y(m-1) & y(m-1) & y(m-2);
+    	LRG_ODD: RECODING_CELL port map ( y => y_s4 , one => one(h-1), two => two(h-1), neg => neg(h-1) );
     end generate;
 
 end architecture;
+
 
